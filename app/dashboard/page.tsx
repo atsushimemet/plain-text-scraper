@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabaseClient as supabase } from '@/lib/supabase-client'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/app/components/AuthProvider'
 import type { Database } from '@/types/database'
 
 type Job = Database['public']['Tables']['jobs']['Row']
 type Page = Database['public']['Tables']['pages']['Row']
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
+  const { user, loading: authLoading } = useAuth()
   const [url, setUrl] = useState('')
   const [jobs, setJobs] = useState<Job[]>([])
   const [pages, setPages] = useState<Page[]>([])
@@ -18,19 +19,16 @@ export default function Dashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/auth/login')
-        return
-      }
-      setUser(user)
-      fetchJobs()
-      fetchPages()
+    if (authLoading) return
+
+    if (!user) {
+      router.push('/auth/login')
+      return
     }
 
-    getUser()
-  }, [router])
+    fetchJobs()
+    fetchPages()
+  }, [user, authLoading, router])
 
   const fetchJobs = async () => {
     setLoading(true)
@@ -68,10 +66,12 @@ export default function Dashboard() {
 
     setSubmitting(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const response = await fetch('/api/scrape', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify({ url }),
       })
@@ -105,9 +105,15 @@ export default function Dashboard() {
     }
   }
 
-  if (!user) {
+  if (authLoading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-gray-500">読み込み中...</div>
+    </div>
+  }
+
+  if (!user) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-gray-500">認証中...</div>
     </div>
   }
 
