@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -116,7 +117,7 @@ async function fetchRobotsTxt(hostname: string): Promise<string> {
   try {
     const response = await fetch(`https://${hostname}/robots.txt`, {
       headers: {
-        'User-Agent': 'PlainTextScraper/1.0 (+https://plain-text-scraper.com)',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
       signal: AbortSignal.timeout(5000),
     })
@@ -141,7 +142,7 @@ function isAllowed(robotsTxt: string, path: string): boolean {
 
     if (trimmed.startsWith('user-agent:')) {
       const agent = trimmed.substring(11).trim()
-      userAgentMatch = agent === '*' || agent === 'plaintextscraper'
+      userAgentMatch = agent === '*'
     }
 
     if (userAgentMatch && trimmed.startsWith('disallow:')) {
@@ -162,7 +163,7 @@ async function fetchHtml(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'PlainTextScraper/1.0 (+https://plain-text-scraper.com)',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'ja,en;q=0.9',
       },

@@ -50,6 +50,7 @@ export default function Dashboard() {
     const { data, error } = await supabase
       .from('pages')
       .select('*')
+      .eq('user_id', user?.id)
       .order('created_at', { ascending: false })
       .limit(10)
 
@@ -80,6 +81,10 @@ export default function Dashboard() {
         const { jobId } = await response.json()
         setUrl('')
         fetchJobs()
+        // ジョブ完了後にpagesも更新
+        setTimeout(() => {
+          fetchPages()
+        }, 2000)
       } else {
         const error = await response.json()
         alert(error.error || 'エラーが発生しました')
