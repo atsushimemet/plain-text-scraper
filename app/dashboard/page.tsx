@@ -175,9 +175,15 @@ export default function Dashboard() {
                   {jobs.map((job) => (
                     <div key={job.id} className="border-l-4 border-gray-200 pl-4">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium text-gray-900 truncate">
+                        <a
+                          href={job.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 truncate hover:underline"
+                          title={job.url}
+                        >
                           {job.url}
-                        </div>
+                        </a>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           job.status === 'succeeded'
                             ? 'bg-green-100 text-green-800'
@@ -219,9 +225,15 @@ export default function Dashboard() {
                           <h4 className="text-sm font-medium text-gray-900 truncate">
                             {page.title || 'タイトルなし'}
                           </h4>
-                          <p className="text-xs text-gray-500 truncate">
+                          <a
+                            href={page.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 truncate hover:underline"
+                            title={page.url}
+                          >
                             {page.url}
-                          </p>
+                          </a>
                         </div>
                         <button
                           onClick={() => copyToClipboard(page.content || '')}
