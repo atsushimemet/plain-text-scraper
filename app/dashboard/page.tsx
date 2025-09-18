@@ -28,7 +28,7 @@ export default function Dashboard() {
 
     fetchJobs()
     fetchPages()
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchJobs = async () => {
     setLoading(true)
